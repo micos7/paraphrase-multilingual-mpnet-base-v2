@@ -118,7 +118,7 @@ class Predictor(BasePredictor):
                     chunked_sentences.append(current_chunk)
 
                 try:
-                    embeddings = [self.model.encode(chunk, device='cuda', normalize_embeddings=True) for chunk in chunked_sentences]
+                    embeddings = [self.model.encode(chunk, device=self.device, normalize_embeddings=True) for chunk in chunked_sentences]
                 except Exception as e:
                     # print(e)
                     # logger.error(f"Error encoding text chunks for page {page_number}: {e}")
@@ -146,7 +146,7 @@ class Predictor(BasePredictor):
         print(f"loading weights from {weights} w/o tensorizer")
         # model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')
         # model.save("models")
-        model = SentenceTransformer("models",use_auth_token="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")
+        model = SentenceTransformer("models",use_auth_token="asd")
         model.to(self.device)
         print(f"weights loaded in {time.time() - st}")
         return model
