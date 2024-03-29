@@ -37,7 +37,7 @@ class PDFEmbeddingResponse(BaseModel):
     model: str
 
 class PDFBody(BaseModel):
-    url: str | list[str] = Field(description="Your text string goes here")
+    url: str = Field(description="Your text string goes here")
 
 class Predictor(BasePredictor):
     def setup(self, weights: Optional[Path] = None):
