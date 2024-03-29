@@ -74,10 +74,11 @@ class Predictor(BasePredictor):
                 else:
                     self.model = self.load_huggingface_model(weights=target_model)
 
-    def pdf_embeddings(self,body: PDFBody) -> List[Embedding]:
+    def pdf_embeddings(self,url: str) -> List[Embedding]:
         try:
             # Fetch PDF content from the URL
-            pdf_content = requests.get(body.url).content
+            pdf_content = requests.get(url).content
+            # print(pdf_content)
         except requests.exceptions.RequestException as e:
             # logger.error(f"Error fetching PDF content: {e}")
             raise Exception(status_code=500, detail="Error fetching PDF content")
@@ -94,6 +95,7 @@ class Predictor(BasePredictor):
             for page_number, page in enumerate(pdf_reader.pages):
                 try:
                     page_text = page.extract_text()
+                    # print(page_text)
                 except Exception as e:
                     # logger.error(f"Error extracting text from page {page_number}: {e}")
                     continue
@@ -118,10 +120,12 @@ class Predictor(BasePredictor):
                 try:
                     embeddings = [self.model.encode(chunk, device='cuda', normalize_embeddings=True) for chunk in chunked_sentences]
                 except Exception as e:
+                    # print(e)
                     # logger.error(f"Error encoding text chunks for page {page_number}: {e}")
                     continue
 
                 for i, (embedding, sentence) in enumerate(zip(embeddings, chunked_sentences)):
+                    # print(embedding)
                     embedding_responses.append({
                         "embedding": embedding.tolist(),
                         "text": sentence,
@@ -140,7 +144,9 @@ class Predictor(BasePredictor):
     def load_huggingface_model(self, weights=None):
         st = time.time()
         print(f"loading weights from {weights} w/o tensorizer")
-        model = SentenceTransformer(weights)
+        # model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')
+        # model.save("models")
+        model = SentenceTransformer("models",use_auth_token="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")
         model.to(self.device)
         print(f"weights loaded in {time.time() - st}")
         return model
@@ -165,12 +171,12 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
-        body: PDFBody,
+        url: str,
         text: str = Input(default=None, description="A single string to encode."),
         text_batch: str = Input(default=None, description="A JSON-formatted list of strings to encode."),
         
 
-    ) -> List[Embedding]:
+    ) -> PDFEmbeddingResponse:
         """
         Encode a single `text` or a `text_batch` into embeddings.
 
@@ -187,24 +193,24 @@ class Predictor(BasePredictor):
             A list of embeddings ordered the same as the inputs.
         """
 
+        return  self.pdf_embeddings(url)
 
+        # if text:
+        #     docs = [text]
 
-        if text:
-            docs = [text]
+        # elif text_batch:
+        #     docs = json.loads(text_batch)
 
-        elif text_batch:
-            docs = json.loads(text_batch)
+        # else:
+        #     return  self.pdf_embeddings(url)
 
-        else:
-            return  self.pdf_embeddings(body)
+        # embeddings = self.model.encode(docs)
 
-        embeddings = self.model.encode(docs)
+        # outputs = []
+        # for embedding in embeddings:
+        #     outputs.append(Embedding(embedding=[float(x) for x in embedding.tolist()]))
 
-        outputs = []
-        for embedding in embeddings:
-            outputs.append(Embedding(embedding=[float(x) for x in embedding.tolist()]))
-
-        return outputs
+        # return outputs
     
 
 
