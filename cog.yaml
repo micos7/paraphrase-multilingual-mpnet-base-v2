@@ -22,7 +22,7 @@ build:
     - "sentence-transformers==2.2.2"
     - "pyyaml"
     - "pydantic"
-    - "pypdf"
+    - "pypdf==4.1.0"
 
 # predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
