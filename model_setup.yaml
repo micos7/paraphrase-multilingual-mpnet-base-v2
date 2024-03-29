@@ -1,5 +1,5 @@
-model_id: sentence-transformers/all-mpnet-base-v2
-hf_model_path: models/all-mpnet-base-v2/hf
-tokenizer_path: models/all-mpnet-base-v2
+model_id: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+hf_model_path: models/paraphrase-multilingual-mpnet-base-v2/hf
+tokenizer_path: models/paraphrase-multilingual-mpnet-base-v2
 tensorize: false
-target_model: models/all-mpnet-base-v2/hf
+target_model: models/paraphrase-multilingual-mpnet-base-v2/hf
